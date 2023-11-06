@@ -54,7 +54,7 @@ def addNewStudent():
                               (fName, lName, GPA, major, facAdvisor, address, city, state, zipCode,mobilePhone, 0),)
     conn.commit()
     print('Completed:')
-    myCursor.execute(f"SELECT * From Students WHERE FirstName = '{fName}' AND LastName = '{lName}'")
+    myCursor.execute(f"SELECT * From Students WHERE FirstName = '{fName}' AND LastName = '{lName}' AND isDeleted == 0")
     data = myCursor.fetchall()
     print(data)
     myCursor.close()
@@ -69,12 +69,12 @@ def updateStudentRecord():
     while validInput == False:
         try:
             studentID = int(studentID)
-            myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}';")
+            myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}'AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
-                studentID = input('We don\'t have any student with that major, please try another:\n')
-                myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}';")
+                studentID = input('We don\'t have any students with that ID, please try another:\n')
+                myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0 ")
                 data = myCursor.fetchall()
             print(data)
             confirm = input("Is this the correct student? (Y/N):\n")
@@ -207,7 +207,7 @@ def searchByAttribute():
                         isGPA = True
                 except ValueError:
                     GPA = input('Please input a valid GPA:\n')
-            greaterOrLess = input("Would you like to search for\n1.Exact GPA\n2.GPAs less than or equal to\n3.GPAs greater than or equal to\n")
+            greaterOrLess = input("Would you like to search for(1-3)\n1. Exact GPA\n2. GPAs less than or equal to\n3. GPAs greater than or equal to\n")
             validInput = False
             while validInput == False:
                 try:
@@ -266,5 +266,42 @@ def searchByAttribute():
             data = myCursor.fetchall()
         for row in data:
             print(row)
+    myCursor.close()
 
 
+##### Creates the terminal application enviorment #####
+def setEnviorment():
+    stay = True
+    while stay == True:
+        selection = input("Please select a action you would like to perform (1-6)\n"
+                          "1. Display all enrolled students\n"
+                          "2. Add a new student\n"
+                          "3. Update a student's Major, Advisor, or Mobile Phone\n"
+                          "4. Delete a student\n"
+                          "5. Search by Major, GPA, City, State, or Advisor\n"
+                          "6. Exit\n")
+        validInput = False
+        while validInput == False:
+            try:
+                selection = int(selection)
+                if selection < 1 or selection > 6:
+                    selection = input('Please input a valid selection:\n')
+                else:
+                    validInput = True
+            except ValueError:
+                selection = input('Please input a valid selection:\n')
+        if selection == 1:
+            getAllStudents()
+        elif selection == 2:
+            addNewStudent()
+        elif selection == 3:
+            updateStudentRecord()
+        elif selection == 4:
+            deleteStudent()
+        elif selection == 5:
+            searchByAttribute()
+        elif selection == 6:
+            stay = False
+    print("Thank you for using this awesome terminal database system.")
+
+setEnviorment()
