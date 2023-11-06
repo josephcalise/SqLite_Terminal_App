@@ -1,21 +1,22 @@
 import sqlite3
 import csv
-
-###### Function for Section A #######
+# conn = sqlite3.connect('StudentDB.sqlite')
+# myCursor = conn.cursor()
+# ###### Function for Section A #######
 # with open ('students.csv','r') as csv_file:
 #     reader = csv.reader(csv_file)
 #     next(reader) # skip first row
 #     for row in reader:
-#         myCursor.execute("INSERT INTO Students(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+#         myCursor.execute("INSERT INTO Student(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 #                          (row[0],row[1], row[8], row[7], 'Unassigned', row[2], row[3], row[4], row[5], row[6], 0),)
 #         conn.commit()
 
 
 ###### Function for Section B #######
-def getAllStudents():
-    conn = sqlite3.connect('../StudentDB.sqlite')
+def getAllStudent():
+    conn = sqlite3.connect('StudentDB.sqlite')
     myCursor = conn.cursor()
-    myCursor.execute("SELECT * From Students")
+    myCursor.execute("SELECT * From Student")
     data = myCursor.fetchall()
     for row in data:
         ##### Conditional to check if student is soft deleted #####
@@ -24,7 +25,7 @@ def getAllStudents():
     myCursor.close()
 ###### Function for Section C #######
 def addNewStudent():
-    conn = sqlite3.connect('../StudentDB.sqlite')
+    conn = sqlite3.connect('StudentDB.sqlite')
     myCursor = conn.cursor()
     ##### Start of information gathering #####
     fName = input("Please enter the new student's first name:\n")
@@ -50,18 +51,18 @@ def addNewStudent():
     mobilePhone = input("Please enter the new student's mobile phone number:\n")
     ##### End of Information gathering ######
     myCursor.execute(
-        "INSERT INTO Students(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO Student(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                               (fName, lName, GPA, major, facAdvisor, address, city, state, zipCode,mobilePhone, 0),)
     conn.commit()
     print('Completed:')
-    myCursor.execute(f"SELECT * From Students WHERE FirstName = '{fName}' AND LastName = '{lName}' AND isDeleted == 0")
+    myCursor.execute(f"SELECT * From Student WHERE FirstName = '{fName}' AND LastName = '{lName}' AND isDeleted == 0")
     data = myCursor.fetchall()
     print(data)
     myCursor.close()
 
 ###### Function for Section D #######
 def updateStudentRecord():
-    conn = sqlite3.connect('../StudentDB.sqlite')
+    conn = sqlite3.connect('StudentDB.sqlite')
     myCursor = conn.cursor()
     studentID = input("Please input the Student ID you would like to update:\n")
     validInput = False
@@ -69,12 +70,12 @@ def updateStudentRecord():
     while validInput == False:
         try:
             studentID = int(studentID)
-            myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}'AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}'AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
-                studentID = input('We don\'t have any students with that ID, please try another:\n')
-                myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0 ")
+                studentID = input('We don\'t have any Student with that ID, please try another:\n')
+                myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0 ")
                 data = myCursor.fetchall()
             print(data)
             confirm = input("Is this the correct student? (Y/N):\n")
@@ -99,25 +100,25 @@ def updateStudentRecord():
     ##### Conditional to update correct field #####
     if field == 1:
         newVal = input("What is the student's new major?\n")
-        myCursor.execute(f"UPDATE Students SET Major = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"UPDATE Student SET Major = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
-        myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
         data = myCursor.fetchall()
         print(f"Student ID: {studentID} has been updated.")
         print(data)
     elif field == 2:
         newVal = input("Who is the student's new faculty advisor?\n")
-        myCursor.execute(f"UPDATE Students SET FacultyAdvisor = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"UPDATE Student SET FacultyAdvisor = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
-        myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
         data = myCursor.fetchall()
         print(f"Student ID: {studentID} has been updated.")
         print(data)
     elif field == 3:
         newVal = input("What is the student's new mobile number?\n")
-        myCursor.execute(f"UPDATE Students SET MobilePhoneNumber = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"UPDATE Student SET MobilePhoneNumber = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
-        myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
         data = myCursor.fetchall()
         print(f"Student ID: {studentID} has been updated.")
         print(data)
@@ -125,25 +126,25 @@ def updateStudentRecord():
 
 ###### Function for Section E #######
 def deleteStudent():
-    conn = sqlite3.connect('../StudentDB.sqlite')
+    conn = sqlite3.connect('StudentDB.sqlite')
     myCursor = conn.cursor()
     studentID = input("Please enter the student ID you would like to delete:\n")
     validInput = False
     while validInput == False:
         try:
             studentID = int(studentID)
-            myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
                 studentID = input('We don\'t have any student with that major, please try another:\n')
-                myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
+                myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
                 data = myCursor.fetchall()
             print(data)
             confirm = input("Is this the correct student? (Y/N):\n")
             if confirm.lower() == 'y':
                 myCursor.execute(
-                    f"UPDATE Students SET isDeleted = 1 WHERE StudentId = '{studentID}' AND isDeleted == 0")
+                    f"UPDATE Student SET isDeleted = 1 WHERE StudentId = '{studentID}' AND isDeleted == 0")
                 print(f"Student ID: {studentID} has been deleted.")
                 conn.commit()
                 validInput = True
@@ -157,7 +158,7 @@ def deleteStudent():
 
 ##make not case senstive
 def searchByAttribute():
-    conn = sqlite3.connect('../StudentDB.sqlite')
+    conn = sqlite3.connect('StudentDB.sqlite')
     myCursor = conn.cursor()
     attribute = input(
         "Please the NUMBER of which attribute you would like to search by:\n1. Major\n2. Advisor\n3. GPA\n4. City\n5. State\n")
@@ -174,23 +175,23 @@ def searchByAttribute():
     ##### Conditional to update correct field #####
     if attribute == 1:
         major = input("Please enter the major you would like to search by:\n")
-        myCursor.execute(f"SELECT * From Students Where Major = '{major}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where Major = '{major}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
             major = input('We don\'t have any student with that major, please try another:\n')
-            myCursor.execute(f"SELECT * From Students Where Major = '{major}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where Major = '{major}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
     elif attribute == 2:
             advisor = input("Please enter the faculty advisor you would like to search by:\n")
-            myCursor.execute(f"SELECT * From Students Where FacultyAdvisor = '{advisor}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{advisor}' AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
                 advisor = input('We don\'t have any student with that faculty advisor, please try another:\n')
-                myCursor.execute(f"SELECT * From Students Where FacultyAdvisor = '{advisor}' AND isDeleted == 0")
+                myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{advisor}' AND isDeleted == 0")
                 data = myCursor.fetchall()
             for row in data:
                 print(row)
@@ -224,11 +225,11 @@ def searchByAttribute():
                 sign = '<='
             elif greaterOrLess == 3:
                 sign = '>='
-            myCursor.execute(f"SELECT * From Students Where GPA {sign} '{GPA}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where GPA {sign} '{GPA}' AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
-                GPA = input('We don\'t have any students in that GPA range, please try another:\n')
+                GPA = input('We don\'t have any Student in that GPA range, please try another:\n')
                 isGPA = False
                 while isGPA == False:
                     try:
@@ -240,29 +241,29 @@ def searchByAttribute():
                             isGPA = True
                     except ValueError:
                         GPA = input('Please input a valid GPA:\n')
-                myCursor.execute(f"SELECT * From Students Where GPA {sign} '{GPA}' AND isDeleted == 0")
+                myCursor.execute(f"SELECT * From Student Where GPA {sign} '{GPA}' AND isDeleted == 0")
                 data = myCursor.fetchall()
             for row in data:
                 print(row)
     elif attribute == 4:
         city = input("Please enter the city you would like to search by:\n")
-        myCursor.execute(f"SELECT * From Students Where City = '{city}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where City = '{city}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
-            state = input('We don\'t have any students from that city, please try another:\n')
-            myCursor.execute(f"SELECT * From Students Where City = '{city}' AND isDeleted == 0")
+            state = input('We don\'t have any Student from that city, please try another:\n')
+            myCursor.execute(f"SELECT * From Student Where City = '{city}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
     elif attribute == 5:
         state = input("Please enter the state you would like to search by:\n")
-        myCursor.execute(f"SELECT * From Students Where State = '{state}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where State = '{state}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
-            state = input('We don\'t have any students from that state, please try another:\n')
-            myCursor.execute(f"SELECT * From Students Where State = '{state}' AND isDeleted == 0")
+            state = input('We don\'t have any Student from that state, please try another:\n')
+            myCursor.execute(f"SELECT * From Student Where State = '{state}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
@@ -274,7 +275,7 @@ def setEnviorment():
     stay = True
     while stay == True:
         selection = input("Please select a action you would like to perform (1-6)\n"
-                          "1. Display all enrolled students\n"
+                          "1. Display all enrolled Student\n"
                           "2. Add a new student\n"
                           "3. Update a student's Major, Advisor, or Mobile Phone\n"
                           "4. Delete a student\n"
@@ -291,7 +292,7 @@ def setEnviorment():
             except ValueError:
                 selection = input('Please input a valid selection:\n')
         if selection == 1:
-            getAllStudents()
+            getAllStudent()
         elif selection == 2:
             addNewStudent()
         elif selection == 3:
