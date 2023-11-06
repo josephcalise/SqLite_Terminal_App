@@ -35,7 +35,7 @@ def addNewStudent():
         try:
             GPA = float(GPA)
             ##### Conditional to check GPA Range #####
-            if GPA < 0 or GPA > 5:
+            if GPA <= 0 or GPA > 5:
                 GPA = input('Please input a valid GPA:\n')
             else:
                 isGPA = True
@@ -72,15 +72,16 @@ def updateStudentRecord():
             myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}';")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
-            if len(data) < 1:
-                studentID = input('We can not find that Student ID, please try another:\n')
+            while len(data) < 1:
+                studentID = input('We don\'t have any student with that major, please try another:\n')
+                myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}';")
+                data = myCursor.fetchall()
+            print(data)
+            confirm = input("Is this the correct student? (Y/N):\n")
+            if confirm.lower() == 'y':
+                validInput = True
             else:
-                print(data)
-                confirm = input("Is this the correct student? (Y/N):\n")
-                if confirm.lower() == 'y':
-                    validInput = True
-                else:
-                    studentID = input("Please input the Student ID you would like to update:\n")
+                studentID = input("Please input the Student ID you would like to update:\n")
         except ValueError:
             studentID = input('Please input a valid selection:\n')
     ##### Checks for a valid input, ensuring INT Value is provided ######
@@ -106,7 +107,7 @@ def updateStudentRecord():
         print(data)
     elif field == 2:
         newVal = input("Who is the student's new faculty advisor?\n")
-        myCursor.execute(f"UPDATE Students SET AdvisorID = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"UPDATE Students SET FacultyAdvisor = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
         myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
         data = myCursor.fetchall()
@@ -134,19 +135,20 @@ def deleteStudent():
             myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
-            if len(data) < 1:
-                studentID = input('We can not find that Student ID, please try another:\n')
+            while len(data) < 1:
+                studentID = input('We don\'t have any student with that major, please try another:\n')
+                myCursor.execute(f"SELECT * From Students Where StudentId = '{studentID}' AND isDeleted == 0")
+                data = myCursor.fetchall()
+            print(data)
+            confirm = input("Is this the correct student? (Y/N):\n")
+            if confirm.lower() == 'y':
+                myCursor.execute(
+                    f"UPDATE Students SET isDeleted = 1 WHERE StudentId = '{studentID}' AND isDeleted == 0")
+                print(f"Student ID: {studentID} has been deleted.")
+                conn.commit()
+                validInput = True
             else:
-                print(data)
-                confirm = input("Is this the correct student? (Y/N):\n")
-                if confirm.lower() == 'y':
-                    myCursor.execute(
-                        f"UPDATE Students SET isDeleted = 1 WHERE StudentId = '{studentID}' AND isDeleted == 0")
-                    print(f"Student ID: {studentID} has been deleted.")
-                    conn.commit()
-                    validInput = True
-                else:
-                    studentID = input("Please input the Student ID you would like to update:\n")
+                studentID = input("Please input the Student ID you would like to update:\n")
         except ValueError:
             studentID = input('Please input a valid selection:\n')
     myCursor.close()
@@ -264,7 +266,5 @@ def searchByAttribute():
             data = myCursor.fetchall()
         for row in data:
             print(row)
-
-
 
 
