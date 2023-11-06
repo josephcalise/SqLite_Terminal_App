@@ -249,7 +249,7 @@ def searchByAttribute():
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
             state = input('We don\'t have any students from that city, please try another:\n')
-            myCursor.execute(f"SELECT * From Students Where City = '{state}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Students Where City = '{city}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
