@@ -11,6 +11,13 @@ import csv
 #                          (row[0],row[1], row[8], row[7], 'Unassigned', row[2], row[3], row[4], row[5], row[6], 0),)
 #         conn.commit()
 
+def captialLetters(input):
+    inputSplit = input.split(' ')
+    results = []
+    for word in inputSplit:
+        results.append(word.capitalize())
+    return ' '.join(results)
+
 
 ###### Function for Section B #######
 def getAllStudent():
@@ -29,7 +36,9 @@ def addNewStudent():
     myCursor = conn.cursor()
     ##### Start of information gathering #####
     fName = input("Please enter the new student's first name:\n")
+    fName = captialLetters(fName)
     lName = input("Please enter the new student's last name:\n")
+    lName = captialLetters(lName)
     GPA = input("Please enter the GPA you would like to search by:\n")
     isGPA = False
     while isGPA == False:
@@ -43,10 +52,15 @@ def addNewStudent():
         except ValueError:
             GPA = input('Please input a valid GPA:\n')
     major = input("Please enter the new student's major:\n")
+    major = captialLetters(major)
     facAdvisor = input("Please enter the new student's Faculty Advisor:\n")
+    facAdvisor = captialLetters(facAdvisor)
     address = input("Please enter the new student's street address:\n")
+    address = captialLetters(address)
     city = input("Please enter the new student's city address:\n")
+    city = captialLetters(city)
     state = input("Please enter the new student's state address:\n")
+    state = state.upper()
     zipCode = input("Please enter the new student's ZIP Code:\n")
     mobilePhone = input("Please enter the new student's mobile phone number:\n")
     ##### End of Information gathering ######
@@ -100,7 +114,7 @@ def updateStudentRecord():
     ##### Conditional to update correct field #####
     if field == 1:
         newVal = input("What is the student's new major?\n")
-        myCursor.execute(f"UPDATE Student SET Major = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"UPDATE Student SET Major = '{captialLetters(newVal)}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
         myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
         data = myCursor.fetchall()
@@ -108,7 +122,7 @@ def updateStudentRecord():
         print(data)
     elif field == 2:
         newVal = input("Who is the student's new faculty advisor?\n")
-        myCursor.execute(f"UPDATE Student SET FacultyAdvisor = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
+        myCursor.execute(f"UPDATE Student SET FacultyAdvisor = '{captialLetters(newVal)}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
         myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
         data = myCursor.fetchall()
@@ -175,23 +189,23 @@ def searchByAttribute():
     ##### Conditional to update correct field #####
     if attribute == 1:
         major = input("Please enter the major you would like to search by:\n")
-        myCursor.execute(f"SELECT * From Student Where Major = '{major}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where Major = '{captialLetters(major)}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
             major = input('We don\'t have any student with that major, please try another:\n')
-            myCursor.execute(f"SELECT * From Student Where Major = '{major}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where Major = '{captialLetters(major)}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
     elif attribute == 2:
             advisor = input("Please enter the faculty advisor you would like to search by:\n")
-            myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{advisor}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{captialLetters(advisor)}' AND isDeleted == 0")
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
                 advisor = input('We don\'t have any student with that faculty advisor, please try another:\n')
-                myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{advisor}' AND isDeleted == 0")
+                myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{captialLetters(advisor)}' AND isDeleted == 0")
                 data = myCursor.fetchall()
             for row in data:
                 print(row)
@@ -247,23 +261,23 @@ def searchByAttribute():
                 print(row)
     elif attribute == 4:
         city = input("Please enter the city you would like to search by:\n")
-        myCursor.execute(f"SELECT * From Student Where City = '{city}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where City = '{captialLetters(city)}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
             state = input('We don\'t have any Student from that city, please try another:\n')
-            myCursor.execute(f"SELECT * From Student Where City = '{city}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where City = '{captialLetters(city)}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
     elif attribute == 5:
         state = input("Please enter the state you would like to search by:\n")
-        myCursor.execute(f"SELECT * From Student Where State = '{state}' AND isDeleted == 0")
+        myCursor.execute(f"SELECT * From Student Where State = '{captialLetters(state)}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
             state = input('We don\'t have any Student from that state, please try another:\n')
-            myCursor.execute(f"SELECT * From Student Where State = '{state}' AND isDeleted == 0")
+            myCursor.execute(f"SELECT * From Student Where State = '{captialLetters(state)}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
