@@ -1,5 +1,18 @@
 import sqlite3
 import csv
+import random
+
+advisors = ['Clark Kent', 'Barry Allen', 'Tony Stark', 'Peter Quill', 'Peter Parker']
+states = ["Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", "California", "Colorado", "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Guam", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Virgin Islands", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
+
+
+
+def checkForNum(input):
+    return any(i.isdigit() for i in input)
+
+def randomAdvisor():
+    return advisors[random.randint(0, 4)]
+
 # conn = sqlite3.connect('StudentDB.sqlite')
 # myCursor = conn.cursor()
 # ###### Function for Section A #######
@@ -7,9 +20,9 @@ import csv
 #     reader = csv.reader(csv_file)
 #     next(reader) # skip first row
 #     for row in reader:
-#         myCursor.execute("INSERT INTO Student(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-#                          (row[0],row[1], row[8], row[7], 'Unassigned', row[2], row[3], row[4], row[5], row[6], 0),)
+# inst
 #         conn.commit()
+
 
 def captialLetters(input):
     inputSplit = input.split(' ')
@@ -37,9 +50,17 @@ def addNewStudent():
     ##### Start of information gathering #####
     fName = input("Please enter the new student's first name:\n")
     fName = captialLetters(fName)
+    while checkForNum(fName) == True:
+        fName = input("Please input a valid first name (no numbers):\n")
+        fName = captialLetters(fName)
+
     lName = input("Please enter the new student's last name:\n")
     lName = captialLetters(lName)
-    GPA = input("Please enter the GPA you would like to search by:\n")
+    while checkForNum(lName) == True:
+        lName = input("Please input a last valid name (no numbers):\n")
+        lName = captialLetters(lName)
+
+    GPA = input("Please enter the new student's GPA:\n")
     isGPA = False
     while isGPA == False:
         try:
@@ -51,22 +72,56 @@ def addNewStudent():
                 isGPA = True
         except ValueError:
             GPA = input('Please input a valid GPA:\n')
+
     major = input("Please enter the new student's major:\n")
     major = captialLetters(major)
-    facAdvisor = input("Please enter the new student's Faculty Advisor:\n")
-    facAdvisor = captialLetters(facAdvisor)
+    while checkForNum(major) == True:
+        major = input("Please input a valid major (no numbers):\n")
+        major = captialLetters(major)
+
     address = input("Please enter the new student's street address:\n")
     address = captialLetters(address)
+
     city = input("Please enter the new student's city address:\n")
     city = captialLetters(city)
+    while checkForNum(city) == True:
+        city = input("Please input a valid city (no numbers):\n")
+        city = captialLetters(city)
+
     state = input("Please enter the new student's state address:\n")
-    state = state.upper()
+    state = captialLetters(state)
+    while state not in states:
+        state = input("Please input a valid state:\n")
+        state = captialLetters(state)
+
     zipCode = input("Please enter the new student's ZIP Code:\n")
+    isZip = False
+    while isZip == False:
+        try:
+            int(zipCode)
+            if len(zipCode) != 5:
+                zipCode = input("Please input a valid ZIP code\n")
+            else:
+                isZip = True
+        except ValueError:
+            zipCode = input('Please input a valid ZIP code\n')
+
     mobilePhone = input("Please enter the new student's mobile phone number:\n")
+    isPhoneNumber = False
+    while isPhoneNumber == False:
+        try:
+            int(mobilePhone)
+            if len(mobilePhone) != 10:
+                mobilePhone = input("Please input a valid phone number (10 digits no leading 1).\n")
+            else:
+                isPhoneNumber = True
+        except ValueError:
+            mobilePhone = input('Please input a valid phone number (10 digits no leading 1)\n')
+
     ##### End of Information gathering ######
     myCursor.execute(
         "INSERT INTO Student(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                              (fName, lName, GPA, major, facAdvisor, address, city, state, zipCode,mobilePhone, 0),)
+                              (fName, lName, GPA, major, randomAdvisor(), address, city, state, zipCode,mobilePhone, 0),)
     conn.commit()
     print('Completed:')
     myCursor.execute(f"SELECT * From Student WHERE FirstName = '{fName}' AND LastName = '{lName}' AND isDeleted == 0")
@@ -130,6 +185,16 @@ def updateStudentRecord():
         print(data)
     elif field == 3:
         newVal = input("What is the student's new mobile number?\n")
+        isPhoneNumber = False
+        while isPhoneNumber == False:
+            try:
+                int(newVal)
+                if len(newVal) != 10:
+                    newVal = input("Please input a valid phone number.\n")
+                else:
+                    isPhoneNumber = True
+            except ValueError:
+                newVal = input('Please input a valid phone number (10 digits no 1)\n')
         myCursor.execute(f"UPDATE Student SET MobilePhoneNumber = '{newVal}' WHERE StudentId = '{studentID}' AND isDeleted == 0")
         conn.commit()
         myCursor.execute(f"SELECT * From Student Where StudentId = '{studentID}' AND isDeleted == 0")
@@ -193,7 +258,9 @@ def searchByAttribute():
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
-            major = input('We don\'t have any student with that major, please try another:\n')
+            major = input('We don\'t have any student with that major, please try another (Enter Q to exit):\n')
+            if major.lower() == 'q':
+                break
             myCursor.execute(f"SELECT * From Student Where Major = '{captialLetters(major)}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
@@ -204,7 +271,9 @@ def searchByAttribute():
             data = myCursor.fetchall()
             ##### Confirms whether the student is found or not #####
             while len(data) < 1:
-                advisor = input('We don\'t have any student with that faculty advisor, please try another:\n')
+                advisor = input('We don\'t have any student with that faculty advisor, please try another (Enter Q to exit):\n')
+                if advisor.lower() == 'q':
+                    break
                 myCursor.execute(f"SELECT * From Student Where FacultyAdvisor = '{captialLetters(advisor)}' AND isDeleted == 0")
                 data = myCursor.fetchall()
             for row in data:
@@ -265,18 +334,26 @@ def searchByAttribute():
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
-            state = input('We don\'t have any Student from that city, please try another:\n')
+            city = input('We don\'t have any Student from that city, please try another (Enter Q to exit):\n')
+            if city.lower() == 'q':
+                break
             myCursor.execute(f"SELECT * From Student Where City = '{captialLetters(city)}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
             print(row)
     elif attribute == 5:
         state = input("Please enter the state you would like to search by:\n")
+        state = captialLetters(state)
+        while state not in states:
+            state = input("Please input a valid state:\n")
+            state = captialLetters(state)
         myCursor.execute(f"SELECT * From Student Where State = '{captialLetters(state)}' AND isDeleted == 0")
         data = myCursor.fetchall()
         ##### Confirms whether the student is found or not #####
         while len(data) < 1:
-            state = input('We don\'t have any Student from that state, please try another:\n')
+            state = input('We don\'t have any Student from that state, please try another (Enter Q to exit):\n')
+            if state.lower() == 'q':
+                break
             myCursor.execute(f"SELECT * From Student Where State = '{captialLetters(state)}' AND isDeleted == 0")
             data = myCursor.fetchall()
         for row in data:
@@ -320,3 +397,4 @@ def setEnviorment():
     print("Thank you for using this awesome terminal database system.")
 
 setEnviorment()
+
