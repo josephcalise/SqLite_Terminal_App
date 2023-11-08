@@ -13,14 +13,13 @@ def checkForNum(input):
 def randomAdvisor():
     return advisors[random.randint(0, 4)]
 
-# conn = sqlite3.connect('StudentDB.sqlite')
-# myCursor = conn.cursor()
-# ###### Function for Section A #######
+##### Section A of Assignment #####
 # with open ('students.csv','r') as csv_file:
 #     reader = csv.reader(csv_file)
 #     next(reader) # skip first row
 #     for row in reader:
-# inst
+#         myCursor.execute("INSERT INTO Students(FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber, isDeleted) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+#                          (row[0],row[1], row[8], row[7], 0, row[2], row[3], row[4], row[5], row[6], 0),)
 #         conn.commit()
 
 
